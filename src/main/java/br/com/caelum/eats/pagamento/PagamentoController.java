@@ -1,4 +1,4 @@
-package br.com.caelum.eatspagamento;
+package br.com.caelum.eats.pagamento;
 
 import java.net.URI;
 

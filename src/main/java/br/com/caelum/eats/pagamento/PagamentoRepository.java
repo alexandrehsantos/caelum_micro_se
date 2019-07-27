@@ -1,4 +1,4 @@
-package br.com.caelum.eatspagamento;
+package br.com.caelum.eats.pagamento;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
