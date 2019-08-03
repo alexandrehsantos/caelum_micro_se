@@ -1,7 +1,12 @@
 package br.com.caelum.eats.pagamento;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.caelum.eats.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 @RestController
 @RequestMapping("/pagamentos")
@@ -22,12 +28,12 @@ import lombok.AllArgsConstructor;
 class PagamentoController {
 
 	private PagamentoRepository pagamentoRepo;
-//	private PedidoService pedidos;
-//	private SimpMessagingTemplate websocket;
+	private PedidoClient pedidoClient;
 
 	@GetMapping("/{id}")
 	public PagamentoDto detalha(@PathVariable Long id) {
 		Pagamento pagamento = pagamentoRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
+
 		return new PagamentoDto(pagamento);
 	}
 
@@ -44,12 +50,9 @@ class PagamentoController {
 		Pagamento pagamento = pagamentoRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 		pagamento.setStatus(Pagamento.Status.CONFIRMADO);
 		pagamentoRepo.save(pagamento);
-//		Long pedidoId = pagamento.getPedido().getId();
-//		Pedido pedido = pedidos.porIdComItens(pedidoId);
-//		pedido.setStatus(Pedido.Status.PAGO);
-//		pedidos.atualizaStatus(Pedido.Status.PAGO, pedido);
-//		websocket.convertAndSend("/parceiros/restaurantes/" + pedido.getRestaurante().getId() + "/pedidos/pendentes",
-//				new PedidoDto(pedido));
+
+		Long pedidoId = pagamento.getPedidoId();
+		pedidoClient.confirmacaoDePagamento(pedidoId);
 		return new PagamentoDto(pagamento);
 	}
 
