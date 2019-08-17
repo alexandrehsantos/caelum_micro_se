@@ -30,6 +30,8 @@ class PagamentoController {
 	private PagamentoRepository pagamentoRepo;
 	private PedidoClient pedidoClient;
 
+	private NotificadorPagamentoConfirmado pagamentoConfirmado;
+
 	@GetMapping("/{id}")
 	public PagamentoDto detalha(@PathVariable Long id) {
 		Pagamento pagamento = pagamentoRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
@@ -50,6 +52,8 @@ class PagamentoController {
 		Pagamento pagamento = pagamentoRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException());
 		pagamento.setStatus(Pagamento.Status.CONFIRMADO);
 		pagamentoRepo.save(pagamento);
+
+		pagamentoConfirmado.notificaPagamentoConfirmado(pagamento);
 
 		Long pedidoId = pagamento.getPedidoId();
 		pedidoClient.confirmacaoDePagamento(pedidoId);
